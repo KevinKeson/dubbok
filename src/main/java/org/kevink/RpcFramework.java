@@ -14,10 +14,13 @@ public class RpcFramework {
 
     static {
         long keepAliveTime = 1;
-        int corePoolSize = 10, maximumPoolSizeSize = 100;
+        int corePoolSize = 10, maximumPoolSize = 100;
         BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(100);
         ThreadFactory threadFactory = Executors.defaultThreadFactory();
-        threadPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSizeSize, keepAliveTime, TimeUnit.MINUTES, workQueue, threadFactory);
+        threadPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MINUTES, workQueue, threadFactory);
+    }
+
+    private RpcFramework() {
     }
 
     public static void export(Object service, int port) {
