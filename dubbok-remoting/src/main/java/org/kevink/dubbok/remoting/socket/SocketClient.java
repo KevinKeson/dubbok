@@ -24,7 +24,7 @@ public class SocketClient extends RpcClient {
     @Override
     protected Object send(RpcRequest request) {
         try (Socket socket = new Socket(host, port)) {
-            logger.info("RPC Client Started ...");
+            logger.info("RPC Client Connecting ...");
             ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
             output.writeObject(request);
             ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
