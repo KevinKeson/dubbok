@@ -1,4 +1,4 @@
-package org.kevink;
+package org.kevink.dubbok.demo;
 
 public interface Service {
 

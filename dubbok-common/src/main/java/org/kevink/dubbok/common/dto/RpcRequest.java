@@ -1,4 +1,4 @@
-package org.kevink;
+package org.kevink.dubbok.common.dto;
 
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Builder
 public class RpcRequest implements Serializable {
 
-    private static final long serialVersionUID = -8264532639544600308L;
+    private static final long serialVersionUID = -1629298832116310500L;
 
     /**
      * 接口名
