@@ -2,9 +2,6 @@ package org.kevink.dubbok.remoting.socket;
 
 import org.kevink.dubbok.common.dto.RpcRequest;
 import org.kevink.dubbok.common.dto.RpcResponse;
-import org.kevink.dubbok.common.enums.RpcErrorMessage;
-import org.kevink.dubbok.common.enums.RpcResponseCode;
-import org.kevink.dubbok.common.exception.RpcException;
 import org.kevink.dubbok.remoting.RpcClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,22 +22,23 @@ public class SocketClient extends RpcClient {
     protected Object send(RpcRequest request) {
         try (Socket socket = new Socket(host, port)) {
             logger.info("RPC Client Connecting ...");
+            // 发起调用
             ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
             output.writeObject(request);
+
+            // 可能出现IO异常导致获取超时
+            // 需要超时失败机制来避免死锁
+
+            // 获取结果
             ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
             RpcResponse response = (RpcResponse) input.readObject();
-            if (!response.getCode().equals(RpcResponseCode.SUCCESS.getCode())) {
-                String cause = request.getInterfaceName() + "." +
-                        request.getMethodName() + ", " +
-                        response.getCode() + "(Code), " +
-                        response.getMessage() + "(Message)";
-                logger.error("Service Invocation Failed: {}", cause);
-                throw new RpcException(RpcErrorMessage.SERVICE_INVOCATION_FAIL, cause);
-            }
-            return response.getData();
+
+            // 返回结果
+            return check(request, response, logger);
         } catch (Exception e) {
             logger.error("Exception Occurred: ", e);
         }
+        // 默认返回
         return null;
     }
 

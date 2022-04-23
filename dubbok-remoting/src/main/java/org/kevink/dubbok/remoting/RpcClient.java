@@ -1,6 +1,11 @@
 package org.kevink.dubbok.remoting;
 
 import org.kevink.dubbok.common.dto.RpcRequest;
+import org.kevink.dubbok.common.dto.RpcResponse;
+import org.kevink.dubbok.common.enums.RpcErrorMessage;
+import org.kevink.dubbok.common.enums.RpcResponseCode;
+import org.kevink.dubbok.common.exception.RpcException;
+import org.slf4j.Logger;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -19,10 +24,25 @@ public abstract class RpcClient {
 
     @SuppressWarnings("unchecked")
     public <T> T getProxy(Class<T> clazz) {
-        return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, new RpcProxy(this));
+        return (T) Proxy.newProxyInstance(
+                clazz.getClassLoader(), new Class<?>[]{clazz}, new RpcProxy(this));
     }
 
     protected abstract Object send(RpcRequest request);
+
+    protected Object check(
+            RpcRequest request, RpcResponse response, Logger logger) throws RpcException {
+        // 检查结果
+        if (!response.getCode().equals(RpcResponseCode.SUCCESS.getCode())) {
+            String cause = request.getInterfaceName() + "." +
+                    request.getMethodName() + ", " +
+                    response.getCode() + "(Code), " +
+                    response.getMessage() + "(Message)";
+            logger.error("Service Invocation Failed: {}", cause);
+            throw new RpcException(RpcErrorMessage.SERVICE_INVOCATION_FAIL, cause);
+        }
+        return response.getData();
+    }
 
     private static class RpcProxy implements InvocationHandler {
 

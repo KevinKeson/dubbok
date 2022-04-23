@@ -1,11 +1,8 @@
 package org.kevink.dubbok.remoting.socket;
 
-import org.kevink.dubbok.common.dto.RpcRequest;
 import org.kevink.dubbok.common.dto.RpcResponse;
-import org.kevink.dubbok.common.enums.RpcResponseCode;
-import org.kevink.dubbok.common.exception.RpcException;
 import org.kevink.dubbok.registry.ServiceRegistry;
-import org.kevink.dubbok.remoting.RpcHandler;
+import org.kevink.dubbok.remoting.RpcServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +13,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.*;
 
-public class SocketServer {
+public class SocketServer extends RpcServer {
 
     private static final Logger logger = LoggerFactory.getLogger(SocketServer.class);
 
@@ -27,26 +24,33 @@ public class SocketServer {
         int corePoolSize = 3, maximumPoolSize = 10;
         BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(10);
         ThreadFactory threadFactory = Executors.defaultThreadFactory();
-        threadPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MINUTES, workQueue, threadFactory);
+        threadPool = new ThreadPoolExecutor(
+                corePoolSize,
+                maximumPoolSize,
+                keepAliveTime,
+                TimeUnit.MINUTES,
+                workQueue,
+                threadFactory);
     }
-
-    private final ServiceRegistry serviceRegistry;
 
     public SocketServer(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
+        super(serviceRegistry);
     }
 
+    @Override
     public void start(int port) {
         try (ServerSocket server = new ServerSocket(port)) {
             logger.info("RPC Server Started ...");
             Socket socket;
             while ((socket = server.accept()) != null) {
                 logger.info("RPC Client Connected ...");
-                threadPool.execute(new WorkerThread(socket, serviceRegistry));
+                threadPool.execute(
+                        new WorkerThread(socket, serviceRegistry));
             }
         } catch (IOException e) {
             logger.error("IOException Occurred: ", e);
         } finally {
+            // 出现IO异常 关闭线程池
             threadPool.shutdown();
         }
     }
@@ -68,34 +72,20 @@ public class SocketServer {
         public void run() {
             try (ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
                  ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream())) {
-                // 获取请求
-                RpcRequest request = (RpcRequest) input.readObject();
-                String interfaceName = request.getInterfaceName();
                 // 服务调用
-                RpcResponse response;
-                try {
-                    Object service = registry.getService(interfaceName);
-                    Object result = RpcHandler.handle(service, request);
-                    response = RpcResponse.success(result);
-                    log.info("Method Call Succeeded: {}.{}({})",
-                            service.getClass().getCanonicalName(),
-                            request.getMethodName(),
-                            interfaceName);
-                } catch (RpcException e) {
-                    log.error("Class Not Found: ", e);
-                    response = RpcResponse.fail(RpcResponseCode.CLASS_NOT_FOUND);
-                } catch (NoSuchMethodException e) {
-                    log.error("Method Not Found: ", e);
-                    response = RpcResponse.fail(RpcResponseCode.METHOD_NOT_FOUND);
-                } catch (Exception e) {
-                    log.error("Method Call Failed: ", e);
-                    response = RpcResponse.fail(RpcResponseCode.FAIL);
-                }
+                RpcResponse response = handle(input, registry, log);
+
+                // 可能出现IO异常导致返回失败
+                // 需要机制保证客户端能够收到
+                // 1. 定次重传 连续重传3次
+                // 2. 定时重传 重传3次 每隔1分钟
+                // 3. 混合机制 连续3次 + 重传3次 1 3 10分钟
+
                 // 写回结果
                 output.writeObject(response);
                 output.flush();
-            } catch (Exception e) {
-                log.error("Exception Occurred: ", e);
+            } catch (IOException e) {
+                log.error("IOException Occurred: ", e);
             }
         }
 

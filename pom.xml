@@ -7,7 +7,7 @@
     <groupId>org.kevink</groupId>
     <artifactId>dubbok</artifactId>
     <packaging>pom</packaging>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.3-SNAPSHOT</version>
 
     <modules>
         <module>dubbok-demo</module>

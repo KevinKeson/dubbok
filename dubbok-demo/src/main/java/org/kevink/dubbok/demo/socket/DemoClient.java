@@ -1,5 +1,7 @@
-package org.kevink.dubbok.demo;
+package org.kevink.dubbok.demo.socket;
 
+import org.kevink.dubbok.demo.service.Service;
+import org.kevink.dubbok.remoting.RpcClient;
 import org.kevink.dubbok.remoting.socket.SocketClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,13 +15,20 @@ public class DemoClient {
     private static final Logger logger = LoggerFactory.getLogger(DemoClient.class);
 
     public static void main(String[] args) throws IOException {
-        SocketClient client = new SocketClient("127.0.0.1", 6666);
+        // 启动客户
+        RpcClient client = new SocketClient("127.0.0.1", 6666);
         Service service = client.getProxy(Service.class);
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        // 远程调用
         logger.info("RPC Client Started ...");
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(System.in));
         String name;
         while ((name = in.readLine()) != null) {
-            System.out.println(service.hello(name));
+            String result = service.hello(name);
+            // 防止NPE问题
+            if (result != null) {
+                System.out.println(result);
+            }
         }
     }
 

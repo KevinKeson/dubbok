@@ -1,6 +1,6 @@
-package org.kevink.dubbok.demo.impl;
+package org.kevink.dubbok.demo.service.impl;
 
-import org.kevink.dubbok.demo.Service;
+import org.kevink.dubbok.demo.service.Service;
 
 public class ServiceImpl implements Service {
 
