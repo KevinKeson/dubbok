@@ -4,7 +4,7 @@ import org.kevink.dubbok.common.dto.RpcRequest;
 import org.kevink.dubbok.common.dto.RpcResponse;
 import org.kevink.dubbok.common.enums.RpcResponseCode;
 import org.kevink.dubbok.common.exception.RpcException;
-import org.kevink.dubbok.registry.ServiceRegistry;
+import org.kevink.dubbok.registry.Registry;
 import org.slf4j.Logger;
 
 import java.io.ObjectInputStream;
@@ -12,14 +12,14 @@ import java.lang.reflect.Method;
 
 public abstract class RpcServer {
 
-    protected final ServiceRegistry serviceRegistry;
+    protected final Registry registry;
 
-    protected RpcServer(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
+    protected RpcServer(Registry registry) {
+        this.registry = registry;
     }
 
     protected static RpcResponse handle(
-            ObjectInputStream input, ServiceRegistry registry, Logger logger) {
+            ObjectInputStream input, Registry registry, Logger logger) {
 
         // 在各种情况下保证均有响应
         // 1. SUCCESS

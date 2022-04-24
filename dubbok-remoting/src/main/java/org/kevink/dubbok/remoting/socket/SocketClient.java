@@ -23,14 +23,16 @@ public class SocketClient extends RpcClient {
         try (Socket socket = new Socket(host, port)) {
             logger.info("RPC Client Connecting ...");
             // 发起调用
-            ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
+            ObjectOutputStream output =
+                    new ObjectOutputStream(socket.getOutputStream());
             output.writeObject(request);
 
             // 可能出现IO异常导致获取超时
             // 需要超时失败机制来避免死锁
 
             // 获取结果
-            ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
+            ObjectInputStream input =
+                    new ObjectInputStream(socket.getInputStream());
             RpcResponse response = (RpcResponse) input.readObject();
 
             // 返回结果

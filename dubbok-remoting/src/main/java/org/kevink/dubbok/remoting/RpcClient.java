@@ -31,7 +31,8 @@ public abstract class RpcClient {
     protected abstract Object send(RpcRequest request);
 
     protected Object check(
-            RpcRequest request, RpcResponse response, Logger logger) throws RpcException {
+            RpcRequest request, RpcResponse response, Logger logger)
+            throws RpcException {
         // 检查结果
         if (!response.getCode().equals(RpcResponseCode.SUCCESS.getCode())) {
             String cause = request.getInterfaceName() + "." +

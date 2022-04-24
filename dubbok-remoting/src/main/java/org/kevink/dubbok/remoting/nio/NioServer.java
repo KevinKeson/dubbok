@@ -1,7 +1,7 @@
 package org.kevink.dubbok.remoting.nio;
 
 import org.kevink.dubbok.common.dto.RpcResponse;
-import org.kevink.dubbok.registry.ServiceRegistry;
+import org.kevink.dubbok.registry.Registry;
 import org.kevink.dubbok.remoting.RpcServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +20,8 @@ public class NioServer extends RpcServer {
 
     private static final Logger logger = LoggerFactory.getLogger(NioServer.class);
 
-    public NioServer(ServiceRegistry serviceRegistry) {
-        super(serviceRegistry);
+    public NioServer(Registry registry) {
+        super(registry);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class NioServer extends RpcServer {
                  ByteArrayOutputStream out = new ByteArrayOutputStream();
                  ObjectOutputStream output = new ObjectOutputStream(out)) {
                 // 服务调用
-                RpcResponse response = handle(input, serviceRegistry, logger);
+                RpcResponse response = handle(input, registry, logger);
 
                 // 可能出现IO异常导致返回失败
                 // 需要机制保证客户端能够收到

@@ -1,7 +1,7 @@
 package org.kevink.dubbok.remoting.socket;
 
 import org.kevink.dubbok.common.dto.RpcResponse;
-import org.kevink.dubbok.registry.ServiceRegistry;
+import org.kevink.dubbok.registry.Registry;
 import org.kevink.dubbok.remoting.RpcServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +33,8 @@ public class SocketServer extends RpcServer {
                 threadFactory);
     }
 
-    public SocketServer(ServiceRegistry serviceRegistry) {
-        super(serviceRegistry);
+    public SocketServer(Registry registry) {
+        super(registry);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class SocketServer extends RpcServer {
             while ((socket = server.accept()) != null) {
                 logger.info("RPC Client Connected ...");
                 threadPool.execute(
-                        new WorkerThread(socket, serviceRegistry));
+                        new WorkerThread(socket, registry));
             }
         } catch (IOException e) {
             logger.error("IOException Occurred: ", e);
@@ -61,19 +61,21 @@ public class SocketServer extends RpcServer {
 
         private final Socket socket;
 
-        private final ServiceRegistry registry;
+        private final Registry reg;
 
-        WorkerThread(Socket socket, ServiceRegistry registry) {
+        WorkerThread(Socket socket, Registry reg) {
             this.socket = socket;
-            this.registry = registry;
+            this.reg = reg;
         }
 
         @Override
         public void run() {
-            try (ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
-                 ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream())) {
+            try (ObjectInputStream input =
+                         new ObjectInputStream(socket.getInputStream());
+                 ObjectOutputStream output =
+                         new ObjectOutputStream(socket.getOutputStream())) {
                 // 服务调用
-                RpcResponse response = handle(input, registry, log);
+                RpcResponse response = handle(input, reg, log);
 
                 // 可能出现IO异常导致返回失败
                 // 需要机制保证客户端能够收到
