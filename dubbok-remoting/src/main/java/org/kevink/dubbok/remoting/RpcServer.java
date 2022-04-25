@@ -19,7 +19,7 @@ public abstract class RpcServer {
     }
 
     protected static RpcResponse handle(
-            ObjectInputStream input, Registry registry, Logger logger) {
+            Object input, Registry registry, Logger logger) {
 
         // 在各种情况下保证均有响应
         // 1. SUCCESS
@@ -29,7 +29,9 @@ public abstract class RpcServer {
 
         try {
             // 获取请求
-            RpcRequest request = (RpcRequest) input.readObject();
+            RpcRequest request = input instanceof ObjectInputStream ?
+                    (RpcRequest) ((ObjectInputStream) input).readObject() :
+                    (RpcRequest) input;
             String interfaceName = request.getInterfaceName();
             Object service = registry.getService(interfaceName);
             // 找到方法

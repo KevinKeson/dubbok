@@ -34,7 +34,9 @@ public class DefaultRegistry implements Registry {
             serviceMap.put(i.getCanonicalName(), service);
         }
 
-        logger.info("Add service:{} and interface(s):{}", serviceName, interfaces);
+        logger.info("Add service:{} for interface(s):{}",
+                serviceName,
+                interfaces);
     }
 
     @Override
@@ -43,6 +45,9 @@ public class DefaultRegistry implements Registry {
         if (service == null) {
             throw new RpcException(RpcErrorMessage.SERVICE_NOT_FOUND);
         }
+        logger.info("Get service:{} for interface:{}",
+                service.getClass().getCanonicalName(),
+                serviceName);
         return service;
     }
 }

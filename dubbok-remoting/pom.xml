@@ -29,6 +29,12 @@
             <version>0.4-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.kevink</groupId>
+            <artifactId>dubbok-serialization</artifactId>
+            <version>0.4-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>
