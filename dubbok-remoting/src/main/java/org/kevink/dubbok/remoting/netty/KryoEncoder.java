@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import lombok.AllArgsConstructor;
-import org.kevink.dubbo.serialize.Serialization;
+import org.kevink.dubbok.serialize.api.Serialization;
 
 @AllArgsConstructor
 public class KryoEncoder extends MessageToByteEncoder<Object> {

@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.AllArgsConstructor;
-import org.kevink.dubbo.serialize.Serialization;
+import org.kevink.dubbok.serialize.api.Serialization;
 
 import java.util.List;
 

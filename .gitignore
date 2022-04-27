@@ -1,0 +1,26 @@
+# Eclipse
+.settings/
+.classpath
+.project
+
+# IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Maven
+target/
+*.jar
+*.war
+*.zip
+*.tar
+*.tar.gz
+!.mvn/wrapper/*
+
+# Temp
+*.log
+*.tmp
+*.diff
+*.cache
+*.patch

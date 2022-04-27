@@ -1,4 +1,4 @@
-package org.kevink.dubbo.serialize;
+package org.kevink.dubbok.serialize.api;
 
 public interface Serialization {
 
