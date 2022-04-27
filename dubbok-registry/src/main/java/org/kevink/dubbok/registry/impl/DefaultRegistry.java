@@ -21,9 +21,7 @@ public class DefaultRegistry implements Registry {
     @Override
     public void register(Object service) throws RpcException {
         String serviceName = service.getClass().getCanonicalName();
-        if (registeredService.contains(serviceName)) {
-            return;
-        }
+        if (registeredService.contains(serviceName)) return;
         registeredService.add(serviceName);
 
         Class<?>[] interfaces = service.getClass().getInterfaces();
