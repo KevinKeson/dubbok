@@ -1,10 +1,11 @@
 package org.kevink.dubbok.serialize.kryo;
 
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import org.kevink.dubbok.serialize.api.Cleanable;
 import org.kevink.dubbok.serialize.api.ObjectInput;
+import org.kevink.dubbok.serialize.kryo.utils.KryoUtils;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -14,68 +15,80 @@ public class KryoObjectInput implements ObjectInput, Cleanable {
 
     private final Input input;
 
+    private Kryo kryo;
+
     public KryoObjectInput(InputStream in) {
         input = new Input(in);
+        kryo = KryoUtils.get();
     }
 
     @Override
-    public boolean readBool() throws IOException {
-        return false;
+    public boolean readBool() {
+        return input.readBoolean();
     }
 
     @Override
-    public byte readByte() throws IOException {
-        return 0;
+    public byte readByte() {
+        return input.readByte();
     }
 
     @Override
-    public short readShort() throws IOException {
-        return 0;
+    public short readShort() {
+        return input.readShort();
     }
 
     @Override
-    public int readInt() throws IOException {
-        return 0;
+    public int readInt() {
+        return input.readInt();
     }
 
     @Override
-    public long readLong() throws IOException {
-        return 0;
+    public long readLong() {
+        return input.readLong();
     }
 
     @Override
-    public float readFloat() throws IOException {
-        return 0;
+    public float readFloat() {
+        return input.readFloat();
     }
 
     @Override
-    public double readDouble() throws IOException {
-        return 0;
+    public double readDouble() {
+        return input.readDouble();
     }
 
     @Override
-    public String readUTF() throws IOException {
-        return null;
+    public String readUTF() {
+        return input.readString();
     }
 
     @Override
-    public byte[] readBytes() throws IOException {
-        return new byte[0];
+    public byte[] readBytes() {
+        int len = input.readInt();
+        if (len < 0) {
+            return null;
+        } else if (len == 0) {
+            return new byte[]{};
+        } else {
+            return input.readBytes(len);
+        }
     }
 
     @Override
-    public Object readObject() throws IOException, ClassNotFoundException {
-        return null;
+    public Object readObject() {
+        return kryo.readClassAndObject(input);
     }
 
     @Override
-    public <T> T readObject(Class<T> type) throws IOException, ClassNotFoundException {
-        return null;
+    @SuppressWarnings("unchecked")
+    public <T> T readObject(Class<T> type) {
+        return (T) readObject();
     }
 
     @Override
     public void clean() {
-
+        KryoUtils.release(kryo);
+        kryo = null;
     }
 
 }

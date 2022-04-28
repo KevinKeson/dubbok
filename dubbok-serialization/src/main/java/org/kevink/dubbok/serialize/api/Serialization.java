@@ -1,5 +1,6 @@
 package org.kevink.dubbok.serialize.api;
 
+// TODO modify this interface and its impls
 public interface Serialization {
 
     /**

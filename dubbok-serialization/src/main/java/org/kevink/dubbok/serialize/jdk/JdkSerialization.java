@@ -1,5 +1,7 @@
 package org.kevink.dubbok.serialize.jdk;
 
-public class JdkSerialization {
+import org.kevink.dubbok.serialize.api.Serialization;
+
+public class JdkSerialization implements Serialization {
 
 }

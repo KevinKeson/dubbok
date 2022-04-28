@@ -1,8 +1,10 @@
 package org.kevink.dubbok.serialize.kryo;
 
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
 import org.kevink.dubbok.serialize.api.Cleanable;
 import org.kevink.dubbok.serialize.api.ObjectOutput;
+import org.kevink.dubbok.serialize.kryo.utils.KryoUtils;
 
 import java.io.OutputStream;
 
@@ -13,8 +15,11 @@ public class KryoObjectOutput implements ObjectOutput, Cleanable {
 
     private final Output output;
 
+    private Kryo kryo;
+
     public KryoObjectOutput(OutputStream out) {
         output = new Output(out);
+        kryo = KryoUtils.get();
     }
 
     @Override
@@ -84,12 +89,13 @@ public class KryoObjectOutput implements ObjectOutput, Cleanable {
 
     @Override
     public void writeObject(Object obj) {
-
+        kryo.writeClassAndObject(output, obj);
     }
 
     @Override
     public void clean() {
-
+        KryoUtils.release(kryo);
+        kryo = null;
     }
 
 }
